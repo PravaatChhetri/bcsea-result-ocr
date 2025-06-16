@@ -728,6 +728,9 @@ def index():
                 loading.style.display = 'block';
             });
         </script>
+        <footer>
+        <!-- <p>Created by Pravaat Chhetri</p> -->
+        </footer>
     </body>
     </html>
     """)
