@@ -107,14 +107,26 @@ def clean_result_data(raw_result):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    example_triggered = request.form.get("example") == "true"
     if request.method == 'POST':
-        if 'file' not in request.files:
-            return jsonify({'error': 'No file uploaded'})
+        if example_triggered:
+            # Load example image from static folder
+            path = os.path.join(app.root_path, "static", "example.png")
+            filename = "example.png"
+        else:
+            if 'file' not in request.files:
+                return jsonify({'error': 'No file uploaded'})
+            file = request.files['file']
+            filename = secure_filename(file.filename)
+            path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(path)
+        # if 'file' not in request.files:
+        #     return jsonify({'error': 'No file uploaded'})
 
-        file = request.files['file']
-        filename = secure_filename(file.filename)
-        path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(path)
+        # file = request.files['file']
+        # filename = secure_filename(file.filename)
+        # path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        # file.save(path)
         
         # Convert image to base64 for display
         with open(path, "rb") as img_file:
@@ -578,6 +590,23 @@ def index():
                 background: #333;
             }
             
+            .example-btn {
+                background: #1a1a1a;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                font-weight: 500;
+                width: 100%;
+                transition: background 0.2s ease;
+            }
+            
+            .example-btn:hover {
+                background: #333;
+            }
+            
             .loading {
                 display: none;
                 text-align: center;
@@ -630,7 +659,16 @@ def index():
                 font-size: 0.85rem;
                 color: #666;
             }
-            
+            .example-preview{
+                width:100%,
+                height: auto,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                border: 1px solid #e5e5e5;
+                padding: 10px;
+                
+            }
             @media (max-width: 480px) {
                 .container {
                     padding: 32px 24px;
@@ -667,6 +705,16 @@ def index():
                     <p>Processing image...</p>
                 </div>
             </form>
+            
+            <div class="example-preview">
+                <form method="POST">
+                    <input type="hidden" name="example" value="true">
+                    <button type="submit" class="example-btn">📄 Try Example Image</button>
+                </form>
+                <br>
+                <img src="/static/example.png" width = '200px'
+                height='150px' alt="Example Image">
+            </div>
             
             <div class="features">
                 <div class="feature">
